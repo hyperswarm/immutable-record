@@ -75,7 +75,7 @@ module.exports = class ImmutableRecord extends EventEmitter {
   }
 
   _wait (n) {
-    if (this.destroyed) return
+    if (!this.announcing) return
 
     return new Promise(resolve => {
       const done = () => {
