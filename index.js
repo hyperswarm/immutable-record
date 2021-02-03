@@ -111,12 +111,4 @@ module.exports = class ImmutableRecord extends EventEmitter {
       })
     })
   }
-
-  destroy () {
-    if (this.destroyed) return
-    this.destroyed = true
-    if (this._timeout) clearTimeout(this._timeout)
-    if (this._timeoutResolve) this._timeoutResolve()
-    if (force && this._announceStream) this._announceStream.destroy()
-  }
 }

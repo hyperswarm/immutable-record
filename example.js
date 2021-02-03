@@ -3,7 +3,7 @@ const ImmutableRecord = require('./')
 
 if (process.argv[2] === 'put') {
   put()
-} else if (process.argv[2] =='get-and-put') {
+} else if (process.argv[2] === 'get-and-put') {
   getAndPut()
 } else {
   get()
