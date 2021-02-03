@@ -1,6 +1,6 @@
 {
   "name": "@hyperswarm/immutable-record",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Stateful Immutable record that can reannounce itself and more",
   "main": "index.js",
   "dependencies": {
