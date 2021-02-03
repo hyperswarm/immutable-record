@@ -1,12 +1,13 @@
 const sodium = require('sodium-universal')
 const { EventEmitter } = require('events')
+const codecs = require('codecs')
 
 const REANNOUNCE = 15 * 60000
 const SLACK = 2 * 60000
 const MIN_ACKS = 5
 
 module.exports = class ImmutableRecord extends EventEmitter {
-  constructor (dht, key = null, val = null) {
+  constructor (dht, key = null, val = null, opts) {
     super()
 
     this.dht = dht
@@ -14,6 +15,7 @@ module.exports = class ImmutableRecord extends EventEmitter {
     this.value = val
     this.announcing = false
     this.announced = false
+    this.encoding = codecs(opts && opts.encoding || null)
 
     this._announceRunning = null
     this._announceStream = null
@@ -56,9 +58,10 @@ module.exports = class ImmutableRecord extends EventEmitter {
 
     return new Promise((resolve) => {
       const self = this
+      const value = this.encoding ? this.encoding.encode(this.value) : this.value
       let acks = 0
 
-      this._announceStream = this.dht.immutable.put(this.value, done)
+      this._announceStream = this.dht.immutable.put(value, done)
 
       this._announceStream.on('data', () => {
         if (!this.announced && ++acks >= MIN_ACKS) {
@@ -89,14 +92,14 @@ module.exports = class ImmutableRecord extends EventEmitter {
     })
   }
 
-  static put (node, val) {
+  static put (node, val, opts) {
     if (typeof val === 'string') val = Buffer.from(val)
-    return new ImmutableRecord(node, null, val)
+    return new ImmutableRecord(node, null, opts)
   }
 
-  static get (node, key) {
+  static get (node, key, opts) {
     if (typeof key === 'string') key = Buffer.from(key, 'hex')
-    return new ImmutableRecord(node, key, null)
+    return new ImmutableRecord(node, key, opts)
   }
 
   async get () {
@@ -106,7 +109,11 @@ module.exports = class ImmutableRecord extends EventEmitter {
       this.dht.immutable.get(this.key, (err, val) => {
         if (this.value) return resolve(this.value)
         if (err) return reject(err)
-        this.value = val
+        try {
+          this.value = this.encoding ? this.encoding.decode(val) : val
+        } catch (err) {
+          return reject(err)
+        }
         resolve(val)
       })
     })

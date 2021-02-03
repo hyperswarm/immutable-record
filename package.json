@@ -4,6 +4,7 @@
   "description": "Stateful Immutable record that can reannounce itself and more",
   "main": "index.js",
   "dependencies": {
+    "codecs": "^2.2.0",
     "sodium-universal": "^3.0.3"
   },
   "devDependencies": {
