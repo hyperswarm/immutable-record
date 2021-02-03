@@ -3,7 +3,7 @@
 Stateful Immutable record that can reannounce itself and more.
 
 ```
-npm install immutable-record
+npm install @hyperswarm/immutable-record
 ```
 
 ## Usage
